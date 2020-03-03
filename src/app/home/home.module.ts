@@ -5,7 +5,7 @@ import {HomeRoutingModule} from './home-routing.module';
 import {HomeComponent} from './home.component';
 import {MatTableModule} from "@angular/material/table";
 import {MatButtonModule} from "@angular/material/button";
-
+import {FormsModule, NgForm} from "@angular/forms";
 
 @NgModule({
     declarations: [HomeComponent],
@@ -13,7 +13,8 @@ import {MatButtonModule} from "@angular/material/button";
         CommonModule,
         HomeRoutingModule,
         MatTableModule,
-        MatButtonModule
+        MatButtonModule,
+        FormsModule
     ]
 })
 export class HomeModule {

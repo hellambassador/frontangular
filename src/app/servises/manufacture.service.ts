@@ -14,5 +14,7 @@ export class ManufactureService {
     deleteManufacture(id:number) {
         return this.http.delete("http://localhost:8080/api/manufacture/"+id).toPromise();
     }
-
+    updateManufacture(manuf:Manufacture) {
+        return this.http.put("http://localhost:8080/api/manufacture/"+manuf.idManufacturer,manuf).toPromise();
+    }
 }
