@@ -46,15 +46,14 @@ import {NgForm, FormsModule} from '@angular/forms';
         <form #myForm="ngForm" novalidate>
             <div class="form-group">
                 <label>Имя</label>
-                <input class="form-control" name="name1" [(ngModel)]="name1" required/>
+                <input class="form-control" name="name" ngModel required/>
             </div>
             <div class="form-group">
                 <label>address</label>
-                <input class="form-control" name="address" ngModel
-                       required email/>
+                <input class="form-control" name="address" ngModel required/>
             </div>
-           <div class="form-group">
-                <button [disabled]="myForm.invalid"
+            <div class="form-group">
+                <button
                         class="btn btn-default" (click)="addManuf(myForm)">Добавить
                 </button>
             </div>
@@ -73,8 +72,8 @@ import {NgForm, FormsModule} from '@angular/forms';
 })
 export class HomeComponent implements OnInit {
 
-    manufacturers: Manufacture[]
-    displayedColumns = ["name", "address", "deleteButton", "updateButton"]
+    manufacturers: Manufacture[];
+    displayedColumns = ["name", "address", "deleteButton", "updateButton"];
 
     constructor(private  manufactureServise: ManufactureService) {
     }
@@ -102,11 +101,12 @@ export class HomeComponent implements OnInit {
         // })
     }
 
-    name1: string;
-    address: string;
-
     addManuf(form: NgForm) {
         console.log(form);
-
+        console.log(form.controls["name"].value);
+        console.log(form.value)
+        this.manufactureServise.addManufacture(form.value).then(() => {
+            this.manufacturers.push(form.value)
+        });
     }
 }

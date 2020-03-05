@@ -17,4 +17,7 @@ export class ManufactureService {
     updateManufacture(manuf:Manufacture) {
         return this.http.put("http://localhost:8080/api/manufacture/"+manuf.idManufacturer,manuf).toPromise();
     }
+    addManufacture(manuf:Manufacture){
+    return this.http.put("http://localhost:8080/api/manufacture",manuf).toPromise();
+    }
 }
