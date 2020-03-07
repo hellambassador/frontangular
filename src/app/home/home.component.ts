@@ -44,16 +44,19 @@ import {NgForm, FormsModule} from '@angular/forms';
 
 
         <form #myForm="ngForm" novalidate>
-            <div class="form-group">
-                <label>Имя</label>
-                <input class="form-control" name="name" ngModel required/>
+            <mat-form-field >
+                <mat-label>Имя</mat-label>
+                <input matNativeControl placeholder="Roma" name="name" ngModel required>
+            </mat-form-field>
+            <div>
             </div>
+            <mat-form-field>
+                <mat-label>address</mat-label>
+                <input matNativeControl placeholder="Doma" name="address" ngModel required>
+            </mat-form-field>
+
             <div class="form-group">
-                <label>address</label>
-                <input class="form-control" name="address" ngModel required/>
-            </div>
-            <div class="form-group">
-                <button
+                <button mat-button color="primary"
                         class="btn btn-default" (click)="addManuf(myForm)">Добавить
                 </button>
             </div>
@@ -105,8 +108,8 @@ export class HomeComponent implements OnInit {
         console.log(form);
         console.log(form.controls["name"].value);
         console.log(form.value)
-        this.manufactureServise.addManufacture(form.value).then(() => {
-            this.manufacturers.push(form.value)
+        this.manufactureServise.addManufacture(form.value).then((manufacture) => {
+           this.manufacturers=this.manufacturers.concat(manufacture)
         });
     }
 }

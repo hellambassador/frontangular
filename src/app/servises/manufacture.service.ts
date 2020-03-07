@@ -8,7 +8,7 @@ import {Manufacture} from "../models/manufacture";
 export class ManufactureService {
 
   constructor(private http: HttpClient) { }
-  getManufacturers() {
+  getManufacturers():Promise<Manufacture[]> {
     return this.http.get<Manufacture[]>("http://localhost:8080/api/manufactures").toPromise();
   }
     deleteManufacture(id:number) {
@@ -17,7 +17,7 @@ export class ManufactureService {
     updateManufacture(manuf:Manufacture) {
         return this.http.put("http://localhost:8080/api/manufacture/"+manuf.idManufacturer,manuf).toPromise();
     }
-    addManufacture(manuf:Manufacture){
-    return this.http.put("http://localhost:8080/api/manufacture",manuf).toPromise();
+    addManufacture(manuf:Manufacture):Promise<Manufacture>{
+    return this.http.post<Manufacture>("http://localhost:8080/api/manufacture",manuf).toPromise();
     }
 }
