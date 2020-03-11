@@ -8,5 +8,5 @@ export interface Material{
     // cost:number
     manufacturerByIdManufacturer:Manufacture;
     manufactureName:string
-     // tools: Tool[]
+    tool: Tool[]
 }

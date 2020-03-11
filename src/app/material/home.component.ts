@@ -7,16 +7,6 @@ import {MatSelectModule} from '@angular/material/select';
 import {Tool} from "../models/tools";
 
 
-interface Food {
-    value: string;
-    viewValue: string;
-}
-
-interface Car {
-    value: string;
-    viewValue: string;
-}
-
 @Component({
     selector: 'app-home',
     template: `
@@ -84,12 +74,16 @@ interface Car {
                 </mat-form-field>
             </div>
             <div>
-                <select [(ngModel)]="tools" class="annka-center" name="manufactureName">
+                <select [(ngModel)]="Manufacture" class="annka-center" name="manufactureName">
                     <option *ngFor="let manufacture of manufactureList; let i = index"
                             (ngValue)="manufacture"> {{manufacture.name}}
                     </option>
                 </select>
             </div>
+            <!--(selectionChange)="filter($event)"-->
+            <mat-select multiple (selectionChange)="filter(selected)" [(value)]="selected" >
+                <mat-option *ngFor="let topping of tools"  [value]="topping">{{topping.name}}</mat-option>
+            </mat-select>
             <div class="form-group">
                 <button mat-button color="primary"
                         class="btn btn-default" (click)="addManuf(myForm)">Добавить
@@ -100,10 +94,7 @@ interface Car {
             <!--</div>-->
         </form>
 
-        <mat-select (selectionChange)="filter($event)" multiple [(value)]="selected">
-            <mat-option *ngFor="let topping of toppingList" [value]="topping">{{topping}}</mat-option>
-        </mat-select>
-
+    
     `,
 
     styles: [`
@@ -118,14 +109,10 @@ interface Car {
     `]
 })
 export class HomeComponent implements OnInit {
-    // example
-    toppings = new FormControl();
-    toppingList: string[] = ['Extra cheese', 'Mushroom', 'Onion', 'Pepperoni', 'Sausage', 'Tomato'];
-    // example
-
     manufactureList: Manufacture[];
     manufacturers: Material[];
     tools:Tool[];
+    toolsToAdd:Tool[];
     displayedColumns = ["name", "cost", "manufName", "tools", "deleteButton", "updateButton"];
 
     constructor(private  manufactureServise: MaterialServise) {
@@ -140,10 +127,18 @@ export class HomeComponent implements OnInit {
             this.manufactureList = items;
             console.log(items);
         })
-        this.manufactureServise.getManufacturers().then(items => {
+        this.manufactureServise.getTools().then(items => {
             this.tools = items;
             console.log(items);
         })
+    }
+
+    filter(event:Tool[])
+    {
+        this.toolsToAdd=this.tools;
+        this.toolsToAdd = this.toolsToAdd.filter(element => element.name == "zzz+++zzz");
+        this.toolsToAdd=(event);
+        console.log(this.toolsToAdd);
     }
 
     deleteManufacture(manufacture: Material) {
@@ -165,7 +160,7 @@ export class HomeComponent implements OnInit {
 
     addManuf(form: NgForm) {
         console.log(form);
-        this.manufactureServise.addMaterial(form.value).then(() => {
+        this.manufactureServise.addMaterial(form.value,this.toolsToAdd).then(() => {
             this.manufacturers.push(form.value)
         });
     }
