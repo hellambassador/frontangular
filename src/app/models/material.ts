@@ -1,4 +1,5 @@
 import {Manufacture} from "./manufacture";
+import {Tool} from "./tools";
 
 export interface Material{
     idMaterial:number
@@ -6,7 +7,6 @@ export interface Material{
     cost:GLfloat
     // cost:number
     manufacturerByIdManufacturer:Manufacture;
-
-    // Set<ToolEntity> tools = new HashSet<>();
-
+    manufactureName:string
+     // tools: Tool[]
 }

@@ -1,9 +1,21 @@
 import {Component, OnInit} from '@angular/core';
-import {ManufactureService} from "../servises/manufacture.service";
 import {Manufacture} from "../models/manufacture";
-import {NgForm, FormsModule} from '@angular/forms';
+import {NgForm, FormsModule, FormControl, ReactiveFormsModule} from '@angular/forms';
 import {Material} from "../models/material";
 import {MaterialServise} from "../servises/material.servise";
+import {MatSelectModule} from '@angular/material/select';
+import {Tool} from "../models/tools";
+
+
+interface Food {
+    value: string;
+    viewValue: string;
+}
+
+interface Car {
+    value: string;
+    viewValue: string;
+}
 
 @Component({
     selector: 'app-home',
@@ -23,28 +35,20 @@ import {MaterialServise} from "../servises/material.servise";
                 <th mat-header-cell *matHeaderCellDef> cost</th>
                 <td mat-cell *matCellDef="let element"> {{element.cost}}</td>
             </ng-container>
+
             <ng-container matColumnDef="manufName">
                 <th mat-header-cell *matHeaderCellDef>manufName</th>
                 <td mat-cell *matCellDef="let element"> {{element.manufacturerByIdManufacturer.name}}</td>
             </ng-container>
 
-            <!--<form [formGroup]="element" >-->
-                <!--<table class="table table-responsive">-->
-                    <!--<thead>-->
-                    <!--<tr>-->
-                        <!--<th>Col 1</th>-->
-                        <!--<th>Col 2</th>-->
-                        <!--<th>Col 3</th>-->
-                        <!--<th>Col 4</th>-->
-                        <!--<th>Col 5</th>-->
-                        <!--<th></th>-->
-                    <!--</tr>-->
-                    <!--</thead>-->
-                    <!--<tbody formArrayName="itemRows">-->
-                    <!--<tr *ngFor="let row of [1, 2, 3, 4, 5]" app-data-table-row [row]="row"></tr>-->
-                    <!--</tbody>-->
-                <!--</table>-->
-            <!--</form>-->
+            <ng-container matColumnDef="tools">
+                <th mat-header-cell *matHeaderCellDef>Tools</th>
+                <td mat-cell *matCellDef="let element"><span *ngFor='let phone of element.tool'> {{phone.name}} </span>
+                </td>
+                <!--<span *ngFor *ngler='let phone of element.tools'>{{phone.name}}</td>-->
+                <!--<td *ngFor='let phone of element.tools'>{{phone.name}}</td>-->
+                <!--{element.tool}-->
+            </ng-container>
 
             <ng-container matColumnDef="deleteButton">
                 <th mat-header-cell *matHeaderCellDef></th>
@@ -66,22 +70,42 @@ import {MaterialServise} from "../servises/material.servise";
         </table>
 
 
-        <!--<form #myForm="ngForm" novalidate>-->
-        <!--<div class="form-group">-->
-        <!--<label>Имя</label>-->
-        <!--<input class="form-control" name="name" ngModel required/>-->
-        <!--</div>-->
-        <!--<div class="form-group">-->
-        <!--<label>address</label>-->
-        <!--<input class="form-control" name="address" ngModel required/>-->
-        <!--</div>-->
-        <!--<div class="form-group">-->
-        <!--<button-->
-        <!--class="btn btn-default" (click)="addManuf(myForm)">Добавить-->
-        <!--</button>-->
-        <!--</div>-->
-        <!--</form>-->
+        <form #myForm="ngForm" novalidate>
+            <div>
+                <mat-form-field>
+                    <mat-label>Имя</mat-label>
+                    <input matNativeControl placeholder="Roma" name="name" ngModel required>
+                </mat-form-field>
+            </div>
+            <div>
+                <mat-form-field>
+                    <mat-label>Цена</mat-label>
+                    <input matNativeControl placeholder="111" name="cost" ngModel required>
+                </mat-form-field>
+            </div>
+            <div>
+                <select [(ngModel)]="tools" class="annka-center" name="manufactureName">
+                    <option *ngFor="let manufacture of manufactureList; let i = index"
+                            (ngValue)="manufacture"> {{manufacture.name}}
+                    </option>
+                </select>
+            </div>
+            <div class="form-group">
+                <button mat-button color="primary"
+                        class="btn btn-default" (click)="addManuf(myForm)">Добавить
+                </button>
+            </div>
+            <!--<div>-->
+                <!--<input type="hidden"  name="manufacturerByIdManufacturer" ngModel required>-->
+            <!--</div>-->
+        </form>
+
+        <mat-select (selectionChange)="filter($event)" multiple [(value)]="selected">
+            <mat-option *ngFor="let topping of toppingList" [value]="topping">{{topping}}</mat-option>
+        </mat-select>
+
     `,
+
     styles: [`
         td {
             padding: 10px;
@@ -94,9 +118,15 @@ import {MaterialServise} from "../servises/material.servise";
     `]
 })
 export class HomeComponent implements OnInit {
+    // example
+    toppings = new FormControl();
+    toppingList: string[] = ['Extra cheese', 'Mushroom', 'Onion', 'Pepperoni', 'Sausage', 'Tomato'];
+    // example
 
+    manufactureList: Manufacture[];
     manufacturers: Material[];
-    displayedColumns = ["name", "cost", "manufName", "deleteButton", "updateButton"];
+    tools:Tool[];
+    displayedColumns = ["name", "cost", "manufName", "tools", "deleteButton", "updateButton"];
 
     constructor(private  manufactureServise: MaterialServise) {
     }
@@ -104,21 +134,30 @@ export class HomeComponent implements OnInit {
     ngOnInit(): void {
         this.manufactureServise.getMaterials().then(items => {
             this.manufacturers = items;
+            console.log(this.manufacturers);
+        })
+        this.manufactureServise.getManufacturers().then(items => {
+            this.manufactureList = items;
+            console.log(items);
+        })
+        this.manufactureServise.getManufacturers().then(items => {
+            this.tools = items;
             console.log(items);
         })
     }
 
-    deleteManufacture(manufacture: Manufacture) {
+    deleteManufacture(manufacture: Material) {
         console.log(manufacture);
-        this.manufactureServise.deleteManufacture(manufacture.idManufacturer).then(() => {
-            this.manufacturers = this.manufacturers.filter(element => element.idManufacturer != manufacture.idManufacturer);
-        })
+        this.manufactureServise.deleteMaterial(manufacture.idMaterial).then(() => {
+                this.manufacturers = this.manufacturers.filter(element => element.idMaterial != manufacture.idMaterial);
+            }
+        )
     }
 
-    updateManufacture(manufacture: Manufacture) {
+    updateManufacture(manufacture: Material) {
         console.log(manufacture);
         manufacture.name = manufacture.name + "1";
-        this.manufactureServise.updateManufacture(manufacture);
+        this.manufactureServise.updateMaterial(manufacture);
         // this.manufactureServise.updateManufacture(manufacture).then(() => {
         //     this.manufacturers = this.manufacturers.filter(element => element.idManufacturer != manufacture.idManufacturer);
         // })
@@ -126,9 +165,7 @@ export class HomeComponent implements OnInit {
 
     addManuf(form: NgForm) {
         console.log(form);
-        console.log(form.controls["name"].value);
-        console.log(form.value)
-        this.manufactureServise.addManufacture(form.value).then(() => {
+        this.manufactureServise.addMaterial(form.value).then(() => {
             this.manufacturers.push(form.value)
         });
     }

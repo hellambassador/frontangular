@@ -6,7 +6,7 @@ import {NgForm, FormsModule} from '@angular/forms';
 
 @Component({
     selector: 'app-home',
-    template: `
+    template:`
         <table mat-table [dataSource]="manufacturers" class="mat-elevation-z8">
 
             <!--- Note that these columns can be defined in any order.
@@ -36,8 +36,7 @@ import {NgForm, FormsModule} from '@angular/forms';
                     <button mat-button color="warn" (click)="updateManufacture(element)">update</button>
                 </td>
             </ng-container>
-
-
+            
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>

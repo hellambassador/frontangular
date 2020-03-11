@@ -5,7 +5,10 @@ import {HomeRoutingModule} from './home-routing.module';
 import {HomeComponent} from './home.component';
 import {MatTableModule} from "@angular/material/table";
 import {MatButtonModule} from "@angular/material/button";
-import {FormsModule, NgForm} from "@angular/forms";
+import {FormsModule, NgControl, NgForm} from "@angular/forms";
+import {MatInputModule} from "@angular/material/input";
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {MatSelectModule} from "@angular/material/select";
 
 @NgModule({
     declarations: [HomeComponent],
@@ -14,7 +17,12 @@ import {FormsModule, NgForm} from "@angular/forms";
         HomeRoutingModule,
         MatTableModule,
         MatButtonModule,
-        FormsModule
+        FormsModule,
+        MatInputModule,
+        MatFormFieldModule,
+        MatSelectModule,
+
+
     ]
 })
 export class HomeModule {
