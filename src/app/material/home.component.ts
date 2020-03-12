@@ -50,7 +50,7 @@ import {Tool} from "../models/tools";
             <ng-container matColumnDef="updateButton">
                 <th mat-header-cell *matHeaderCellDef></th>
                 <td mat-cell *matCellDef="let element">
-                    <button mat-button color="warn" (click)="updateManufacture(element)">update</button>
+                    <button mat-button color="warn" (click)="prepareToUpdate(element)">ChoseToUpdate</button>
                 </td>
             </ng-container>
 
@@ -60,7 +60,7 @@ import {Tool} from "../models/tools";
         </table>
 
 
-        <form #myForm="ngForm" novalidate>
+        <form #myForm="ngForm" name="add" novalidate>
             <div>
                 <mat-form-field>
                     <mat-label>Имя</mat-label>
@@ -89,11 +89,49 @@ import {Tool} from "../models/tools";
                         class="btn btn-default" (click)="addManuf(myForm)">Добавить
                 </button>
             </div>
-            <!--<div>-->
-                <!--<input type="hidden"  name="manufacturerByIdManufacturer" ngModel required>-->
-            <!--</div>-->
+            <button mat-button color="primary"
+                    class="btn btn-default" (click)="updateManufacture(myForm)">Заменить
+            </button>
+            <div>
+                <input type="hidden"  name="id" ngModel required>
+            </div>
         </form>
-
+        
+        <form #myForm1="ngForm" name="filter" novalidate>
+            <div>
+                <mat-form-field>
+                    <mat-label>Имя</mat-label>
+                    <input matNativeControl placeholder="Roma" name="Name" ngModel required>
+                </mat-form-field>
+            </div>
+            <div>
+                <mat-form-field>
+                    <mat-label>мин.Цена</mat-label>
+                    <input matNativeControl placeholder="1" name="minCost" ngModel required>
+                </mat-form-field>
+            </div>
+            <div>
+                <mat-form-field>
+                    <mat-label>мах.Цена</mat-label>
+                    <input matNativeControl placeholder="1000" name="maxCost" ngModel required>
+                </mat-form-field>
+            </div>
+            <div>
+                <mat-form-field>
+                    <mat-label>название ващей</mat-label>
+                    <input matNativeControl placeholder="ball" name="toolSort" ngModel required>
+                </mat-form-field>
+            </div>
+            <div class="form-group">
+                <button mat-button color="primary"
+                        class="btn btn-default" (click)="myFilter(myForm1)">Отфильтровать
+                </button>
+            </div>
+            <div>
+                <input type="hidden"  name="id" ngModel required>
+            </div>
+        </form>
+        
     
     `,
 
@@ -102,6 +140,12 @@ import {Tool} from "../models/tools";
             padding: 10px;
         }
 
+        mat-select{
+            border: 1px solid black;
+            width: 180px;
+            border-radius: 20px;
+            margin-top: 10px;
+        }
         table {
             width: 100%
         }
@@ -111,6 +155,7 @@ import {Tool} from "../models/tools";
 export class HomeComponent implements OnInit {
     manufactureList: Manufacture[];
     manufacturers: Material[];
+    materialChange:Material;
     tools:Tool[];
     toolsToAdd:Tool[];
     displayedColumns = ["name", "cost", "manufName", "tools", "deleteButton", "updateButton"];
@@ -133,12 +178,12 @@ export class HomeComponent implements OnInit {
         })
     }
 
-    filter(event:Tool[])
+    myFilter(form: NgForm)
     {
-        this.toolsToAdd=this.tools;
-        this.toolsToAdd = this.toolsToAdd.filter(element => element.name == "zzz+++zzz");
-        this.toolsToAdd=(event);
-        console.log(this.toolsToAdd);
+        console.log(form);
+        this.manufactureServise.filterMaterial(form.value).then(items => {
+            this.manufacturers = items;
+        });
     }
 
     deleteManufacture(manufacture: Material) {
@@ -149,19 +194,25 @@ export class HomeComponent implements OnInit {
         )
     }
 
-    updateManufacture(manufacture: Material) {
-        console.log(manufacture);
-        manufacture.name = manufacture.name + "1";
-        this.manufactureServise.updateMaterial(manufacture);
+    prepareToUpdate(manufacture: Material){
+        this.materialChange=manufacture;
+        console.log(this.materialChange);
+    }
+    updateManufacture(form:NgForm) {
+        // console.log(manufacture);
+
+        console.log(this.materialChange);
+        this.manufactureServise.updateMaterial(this.materialChange,form.value,this.toolsToAdd);
         // this.manufactureServise.updateManufacture(manufacture).then(() => {
         //     this.manufacturers = this.manufacturers.filter(element => element.idManufacturer != manufacture.idManufacturer);
         // })
     }
 
+
     addManuf(form: NgForm) {
         console.log(form);
-        this.manufactureServise.addMaterial(form.value,this.toolsToAdd).then(() => {
-            this.manufacturers.push(form.value)
+        this.manufactureServise.addMaterial(form.value,this.toolsToAdd).then((manufacture) => {
+            this.manufacturers=this.manufacturers.concat(manufacture)
         });
     }
 }
